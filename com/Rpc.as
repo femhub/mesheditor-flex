@@ -10,6 +10,7 @@ package com
     {
         private var uuid:String = "";
         private var httpUserRequest:HTTPService;
+		private var source:String = "";
 
         public function Rpc(url:String, uuid:String="101"):void
         {
@@ -21,13 +22,12 @@ package com
             this.httpUserRequest.method = "POST";
             this.httpUserRequest.contentType = "application/json"
             this.httpUserRequest.resultFormat = "text";
-
-            this.init();
         }
 
         private function init():void
         {
-            this.httpUserRequest.addEventListener(ResultEvent.RESULT, this.initResult);
+			if(!this.httpUserRequest.hasEventListener(ResultEvent.RESULT))
+				this.httpUserRequest.addEventListener(ResultEvent.RESULT, this.initResult);
 
             var arg:Object = {
                                 "jsonrpc": "2.0",
@@ -37,7 +37,6 @@ package com
                             };
 
             var jsonArgs:String = JSON.encode(arg);
-
             this.httpUserRequest.request = jsonArgs;
             this.httpUserRequest.send();
         }
@@ -51,41 +50,50 @@ package com
                 Debug.jsLog("RPC initialization suceed !");
                 trace("RPC initialization suceed !");
 
+				Debug.jsLog("Return Value:");
+				Debug.jsLog(String(evt.result));
+				trace("Return Value");
+				trace(String(evt.result));
+
                 this.httpUserRequest.removeEventListener(ResultEvent.RESULT, this.initResult);
                 this.httpUserRequest.addEventListener(ResultEvent.RESULT, this.queryResult);
+
+				var arg:Object = {
+									"jsonrpc": "2.0",
+									"params": { "uuid":this.uuid, "source": this.source },
+									"method": "RPC.Engine.evaluate",
+									"id": 1
+								};
+
+				var jsonArgs:String = JSON.encode(arg);
+				this.httpUserRequest.request = jsonArgs;
+				this.httpUserRequest.send();
+
             }
             else
             {
                 this.uuid = "";
+                Debug.jsLog("RPC initialization failed:");
 
-                Debug.jsLog("RPC initialization failed: view JS console for detail error", true);
+				Debug.jsLog("Return Value:");
+				Debug.jsLog(String(evt.result));
+				trace("Return Value");
+				trace(String(evt.result));
             }
-
-            Debug.jsLog("Return Value:");
-            Debug.jsLog(String(evt.result));
-            trace("Return Value");
-            trace(String(evt.result));
         }
 
         public function evaluate(source:String):void
-        {
-            var arg:Object = {
-                                "jsonrpc": "2.0",
-                                "params": { "uuid":this.uuid, "source": source },
-                                "method": "RPC.Engine.evaluate",
-                                "id": 1
-                            };
-
-            var jsonArgs:String = JSON.encode(arg);
-            this.httpUserRequest.request = jsonArgs;
-            this.httpUserRequest.send();
-        }
+	    {
+	        this.source = source;
+			this.init();
+	    }
 
         private function queryResult(evt:ResultEvent):void
         {
+            this.httpUserRequest.removeEventListener(ResultEvent.RESULT, this.queryResult);
+
             var meEvt:MeshEditorEvent = new MeshEditorEvent(MeshEditorEvent.RPC_RESULT);
             var res:String = String(evt.result);
-            //Debug.trace(res)
             meEvt.data = JSON.decode(res);
             this.dispatchEvent(meEvt);
         }

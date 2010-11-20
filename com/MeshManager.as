@@ -103,7 +103,7 @@ package com
 
         public function addElement(data:Object):void
         {
-            if(!this.checkDuplicateElement(data) && !this.isElementEncloseOtherVertex(data) && !this.isNewElementIntersectingOtherEdge(data) && !this.isElementWithDuplicateVertices(data))
+            if(!this.checkDuplicateElement(data) && !this.isElementEncloseOtherVertex(data) && !this.isNewElementIntersectingOtherEdge(data) && !this.isElementWithDuplicateVertices(data) && !isOverlapingOtherElement(data))
             {
                 var ei1:Object = null, ei2:Object = null, ei3:Object = null, ei4:Object = null;
 
@@ -511,6 +511,38 @@ package com
             for(var i:int=0;i<this.vertices.length;i++)
             {
                 if(this.vertices[i].x == data.x && this.vertices[i].y == data.y)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private function isOverlapingOtherElement(data:Object):Boolean
+        {
+            for each(var e:Object in this.elements)
+            {
+                var newElementVertices:Array = [data.v1, data.v2, data.v3];
+                if(data.v4 != undefined)
+                    newElementVertices.push(data.v4)
+
+                var count:int = 0;
+                
+                if(newElementVertices.indexOf(e.v1) != -1)
+                    count++;
+
+                if(newElementVertices.indexOf(e.v2) != -1)
+                    count++;
+
+                if(newElementVertices.indexOf(e.v3) != -1)
+                    count++;
+
+                if(e.v4 != undefined)
+                {
+                    if(newElementVertices.indexOf(e.v4) != -1)
+                        count++;
+                }
+
+                if(count > 2)
                     return true;
             }
 

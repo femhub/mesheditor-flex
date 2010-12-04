@@ -7,13 +7,14 @@
         <![CDATA[
             import mx.managers.*;
             import mx.events.*;
-            
+
         ]]>
     </mx:Script>
 
     <mx:Label text="Keyboard Shortcuts" fontWeight="bold" fontSize="15" top="0" left="10"/>
     <mx:Text text="View Documentation: ctrl + f1" fontSize="12" top="0" left="10"/>
 
+    <mx:Text text="Add vertex: ctrl + click" fontSize="12" top="0" left="10"/>
     <mx:Text text="Save mesh: s" fontSize="12" top="0" left="10"/>
     <mx:Text text="Load mesh: l" fontSize="12" top="0" left="10"/>
 

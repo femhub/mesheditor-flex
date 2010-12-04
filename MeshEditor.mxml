@@ -6,6 +6,9 @@
     paddingBottom="10"
     paddingLeft="10"
     paddingRight="10"
+    horizontalScrollPolicy="off"
+    width="850"
+    height="525"
 >
     <mx:Script>
         <![CDATA[

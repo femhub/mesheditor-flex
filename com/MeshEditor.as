@@ -894,6 +894,13 @@ package com
         private function parseFlashVars():void
         {
             //Parse and add vertices
+            var mesh_str:String = Application.application.parameters['mesh'];
+            if(mesh_str != "")
+            {
+                this.meshManager.loadHermesData(mesh_str);
+            }
+
+            //Parse and add vertices
             var vertex_list:String = Application.application.parameters['nodes'];
             if(vertex_list != "")
             {

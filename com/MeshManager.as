@@ -15,7 +15,7 @@ package com
         public var vertices:ArrayCollection;
 
         [Bindable]
-        public var elements:ArrayCollection; 
+        public var elements:ArrayCollection;
 
         [Bindable]
         public var boundaries:ArrayCollection; 

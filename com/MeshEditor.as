@@ -114,6 +114,9 @@ package com
             this.drawingArea.addEventListener(MouseEvent.MOUSE_WHEEL, this.drawingAreaMouseWheel);
             this.drawingArea.addEventListener(MouseEvent.MOUSE_UP, this.drawingAreaMouseUp);
             this.drawingArea.addEventListener(MouseEvent.MOUSE_DOWN, this.drawingAreaMouseDown);
+            //this.drawingArea.addEventListener(MouseEvent.MOUSE_CLICK, this.drawingAreaMouseClick);
+            this.drawingArea.addEventListener(MouseEvent.DOUBLE_CLICK, this.drawingAreaMouseDoubleClick);
+            this.drawingArea.doubleClickEnabled = true;
             this.hboxDrawingArea.addChild(this.drawingArea);
 
             this.meshManager = new MeshManager();
@@ -210,11 +213,15 @@ package com
 
         private function handleKeyDown(evt:KeyboardEvent):void
         {
-            if(evt.ctrlKey && evt.charCode == 127)
+            if(evt.charCode == 27)
+            {
+                this.drawingArea.clearSelectedVertexQueue();
+            }
+            else if(evt.ctrlKey && evt.charCode == 127)
             {
                 this.btnRemoveItemClick(null);
             }
-            if(evt.ctrlKey && evt.keyCode == 112)//f1
+            else if(evt.ctrlKey && evt.keyCode == 112)//f1
             {
                 navigateToURL(new URLRequest("http://femhub.org/doc/src/intromesh.html#mesheditor-based-on-flex"), "_blank")
             }
@@ -771,6 +778,16 @@ package com
             this.drawingArea.mouseDown(evt);
         }
 
+        private function drawingAreaMouseClick(evt:MouseEvent):void
+        {
+            this.drawingArea.mouseClick(evt);
+        }
+
+        private function drawingAreaMouseDoubleClick(evt:MouseEvent):void
+        {
+            this.drawingArea.mouseDoubleClick(evt);
+        }
+
         private function btnHelpClick(evt:MouseEvent):void
         {
             if(this.windowShowHelp == null)
@@ -814,7 +831,22 @@ package com
 
         private function accordionChange(evt:IndexChangedEvent):void
         {
-            this.drawingArea.changeMode(this.accordion.selectedIndex)
+            //this.drawingArea.changeMode(this.accordion.selectedIndex)
+
+            this.drawingArea.readyToAdd = this.accordion.selectedIndex;
+
+            if(this.accordion.selectedIndex == 0)
+            {
+                this.drawingArea.addEventListener(MouseEvent.MOUSE_DOWN, this.drawingAreaMouseDown);
+                this.drawingArea.addEventListener(MouseEvent.MOUSE_UP, this.drawingAreaMouseUp);
+                this.drawingArea.removeEventListener(MouseEvent.CLICK, this.drawingAreaMouseClick);
+            }
+            else
+            {
+                this.drawingArea.removeEventListener(MouseEvent.MOUSE_DOWN, this.drawingAreaMouseDown);
+                this.drawingArea.removeEventListener(MouseEvent.MOUSE_UP, this.drawingAreaMouseUp);
+                this.drawingArea.addEventListener(MouseEvent.CLICK, this.drawingAreaMouseClick);
+            }
         }
 
         private function chkBoxShowElementChange(evt:Event):void

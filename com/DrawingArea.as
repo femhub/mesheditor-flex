@@ -37,7 +37,7 @@ package com
         private const ADD_ELEMENT:int = 1;
         private const ADD_BOUNDARY:int = 2;
 
-        private var readyToAdd:int;
+        public var readyToAdd:int;
         private var selectedVertexQueue:Array;
         private var pointBeforeDrag:Point;
 
@@ -63,10 +63,6 @@ package com
             this.canvas.addChild(this.elementContainer);
             this.canvas.addChild(this.boundaryContainer);
             this.canvas.addChild(this.vertexContainer);
-            this.canvas.doubleClickEnabled = true;
-            this.canvas.addEventListener(MouseEvent.MOUSE_DOWN, this.canvasMouseDown);
-            this.canvas.addEventListener(MouseEvent.MOUSE_UP, this.canvasMouseUp);
-            this.canvas.addEventListener(MouseEvent.DOUBLE_CLICK, this.canvasMouseDoubleClick);
 
             this.msk = new Sprite();
 
@@ -110,6 +106,10 @@ package com
 
             this.canvas.x = unscaledWidth/2;
             this.canvas.y = unscaledHeight/2;
+
+            //this.canvas.graphics.beginFill();
+            //this.canvas.graphics.drawRect(-200, 200, 400,400);
+            //this.canvas.graphics.endFill();
         }
 
         public function addVertex(data:Object):void
@@ -261,134 +261,6 @@ package com
             this.selectionLine.graphics.lineTo(this.selectionLine.mouseX-3, (this.selectionLine.mouseY-3));
         }
 
-        private function canvasMouseUp(evt:MouseEvent):void
-        {
-            if(evt.target is VertexMarker)
-            {
-                evt.target.stopDrag();
-                this.timerUpdateVertex.stop();
-
-                var e:MeshEditorEvent = new MeshEditorEvent(MeshEditorEvent.VERTEX_DRAG_END);
-                e.data = this.vertexDragged.dataProvider;
-                e.data2 = this.pointBeforeDrag;
-
-                this.dispatchEvent(e);
-
-                this.vertexDragged = null;
-                //pointBeforeDrag = null;
-            }
-        }
-
-        private function canvasMouseDown(evt:MouseEvent):void
-        {
-            if(evt.target is VertexMarker)
-            {
-                this.vertexDragged = VertexMarker(evt.target);
-                evt.target.startDrag();
-
-                //pointBeforeDrag = new Point();
-
-                pointBeforeDrag.x = this.vertexDragged.dataProvider.x;
-                pointBeforeDrag.y = this.vertexDragged.dataProvider.y;
-
-                this.timerUpdateVertex.start();
-            }
-        }
-
-        private function canvasMouseDoubleClick(evt:MouseEvent):void
-        {
-            var e:MeshEditorEvent;
-
-            if(evt.target is VertexMarker)
-            {
-                e = new MeshEditorEvent(MeshEditorEvent.VERTEX_REMOVED);
-                e.data = (evt.target as VertexMarker).dataProvider;
-                this.dispatchEvent(e);
-            }
-            else if(evt.target is ElementMarker)
-            {
-                e = new MeshEditorEvent(MeshEditorEvent.ELEMENT_REMOVED);
-                e.data = (evt.target as ElementMarker).dataProvider;
-                this.dispatchEvent(e);
-            }
-            else if(evt.target is BoundaryMarker)
-            {
-                e = new MeshEditorEvent(MeshEditorEvent.BOUNDARY_REMOVED);
-                e.data = (evt.target as BoundaryMarker).dataProvider;
-                this.dispatchEvent(e);
-            }
-        }
-
-        private function canvasMouseClick(evt:MouseEvent):void
-        {
-            if(evt.target is VertexMarker)
-            {
-                var v1:Object, v2:Object, v3:Object, v4:Object;
-                var e:MeshEditorEvent;
-
-                this.addToSelectedVertexQueue(evt.target as VertexMarker);
-                (evt.target as VertexMarker).toggleSelect(true);
-
-                if(this.selectedVertexQueue.length == 1)
-                {
-                    if(this.readyToAdd == this.ADD_ELEMENT)
-                    {
-                        this.elementContainer.addChild(this.selectionLine);
-                    }
-                    else if(this.readyToAdd == this.ADD_BOUNDARY)
-                    {
-                        this.boundaryContainer.addChild(this.selectionLine);
-                    }
-
-                    this.timerUpdateSelectionLine.start();
-                }
-
-                if(this.readyToAdd == this.ADD_BOUNDARY && this.selectedVertexQueue.length >= 2)
-                {
-                    this.timerUpdateSelectionLine.stop();
-                    this.selectionLine.graphics.clear();
-                    this.boundaryContainer.removeChild(this.selectionLine);
-
-                    v1 = selectedVertexQueue.pop();
-                    v1.toggleSelect(false);
-
-                    v2 = selectedVertexQueue.pop();
-                    v2.toggleSelect(false);
-
-                    e = new MeshEditorEvent(MeshEditorEvent.BOUNDARY_ADDED);
-                    e.data = {v1:v2.dataProvider, v2:v1.dataProvider, marker:1, angle:0, boundary:true};
-                    this.dispatchEvent(e);
-                }
-                else if(this.readyToAdd == this.ADD_ELEMENT && this.selectedVertexQueue.length == 4)
-                {
-                    this.timerUpdateSelectionLine.stop();
-                    this.selectionLine.graphics.clear();
-                    this.elementContainer.removeChild(this.selectionLine);
-
-                    v1 = selectedVertexQueue.pop();
-                    v1.toggleSelect(false);
-
-                    v2 = selectedVertexQueue.pop();
-                    v2.toggleSelect(false);
-
-                    v3 = selectedVertexQueue.pop();
-                    v3.toggleSelect(false);
-
-                    v4 = selectedVertexQueue.pop();
-                    v4.toggleSelect(false);
-
-                    e = new MeshEditorEvent(MeshEditorEvent.ELEMENT_ADDED);
-
-                    if(v1 == v4)
-                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, material:0};
-                    else
-                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, v4:v1.dataProvider, material:0};
-                    
-                    this.dispatchEvent(e);
-                }
-            }
-        }
-
         private function addToSelectedVertexQueue(vm:VertexMarker):void
         {
             if(this.selectedVertexQueue.length<4)
@@ -461,12 +333,28 @@ package com
 
         public function mouseUp(evt:MouseEvent):void
         {
+            var e:MeshEditorEvent;
+
             if(evt.ctrlKey)
             {
                 var p:Point = this.getClickedPoint();
-                var e:MeshEditorEvent = new MeshEditorEvent(MeshEditorEvent.VERTEX_ADDED);
+                e = new MeshEditorEvent(MeshEditorEvent.VERTEX_ADDED);
                 e.data = {x:p.x, y:-p.y};
                 this.dispatchEvent(e);
+            }
+            if(evt.target is VertexMarker)
+            {
+                evt.target.stopDrag();
+                this.timerUpdateVertex.stop();
+
+                e = new MeshEditorEvent(MeshEditorEvent.VERTEX_DRAG_END);
+                e.data = this.vertexDragged.dataProvider;
+                e.data2 = this.pointBeforeDrag;
+
+                this.dispatchEvent(e);
+
+                this.vertexDragged = null;
+                //pointBeforeDrag = null;
             }
             else
             {
@@ -485,24 +373,210 @@ package com
             {
                 this.canvas.startDrag();
             }
+            else if(evt.target is VertexMarker)
+            {
+                this.vertexDragged = VertexMarker(evt.target);
+                evt.target.startDrag();
+
+                //pointBeforeDrag = new Point();
+
+                pointBeforeDrag.x = this.vertexDragged.dataProvider.x;
+                pointBeforeDrag.y = this.vertexDragged.dataProvider.y;
+
+                this.timerUpdateVertex.start();
+            }
         }
 
-        public function changeMode(mode:int):void
+        public function mouseClick(evt:MouseEvent):void
         {
-            this.readyToAdd = mode;
-            this.clearSelectedVertexQueue();
+            var target:VertexMarker = null;
 
-            if(mode == 0)
+            if(evt.target is VertexMarker)
             {
-                this.canvas.addEventListener(MouseEvent.MOUSE_DOWN, this.canvasMouseDown);
-                this.canvas.addEventListener(MouseEvent.MOUSE_UP, this.canvasMouseUp);
-                this.canvas.removeEventListener(MouseEvent.CLICK, this.canvasMouseClick);
+
+
+                var v1:Object, v2:Object, v3:Object, v4:Object;
+                var e:MeshEditorEvent;
+
+                this.addToSelectedVertexQueue(evt.target as VertexMarker);
+                (evt.target as VertexMarker).toggleSelect(true);
+
+                if(this.selectedVertexQueue.length == 1)
+                {
+                    if(this.readyToAdd == this.ADD_ELEMENT)
+                    {
+                        this.elementContainer.addChild(this.selectionLine);
+                    }
+                    else if(this.readyToAdd == this.ADD_BOUNDARY)
+                    {
+                        this.boundaryContainer.addChild(this.selectionLine);
+                    }
+
+                    this.timerUpdateSelectionLine.start();
+                }
+
+                if(this.readyToAdd == this.ADD_BOUNDARY && this.selectedVertexQueue.length >= 2)
+                {
+                    this.timerUpdateSelectionLine.stop();
+                    this.selectionLine.graphics.clear();
+                    this.boundaryContainer.removeChild(this.selectionLine);
+
+                    v1 = selectedVertexQueue.pop();
+                    v1.toggleSelect(false);
+
+                    v2 = selectedVertexQueue.pop();
+                    v2.toggleSelect(false);
+
+                    e = new MeshEditorEvent(MeshEditorEvent.BOUNDARY_ADDED);
+                    e.data = {v1:v2.dataProvider, v2:v1.dataProvider, marker:1, angle:0, boundary:true};
+                    this.dispatchEvent(e);
+                }
+                else if(this.readyToAdd == this.ADD_ELEMENT && this.selectedVertexQueue.length == 4)
+                {
+                    this.timerUpdateSelectionLine.stop();
+                    this.selectionLine.graphics.clear();
+                    this.elementContainer.removeChild(this.selectionLine);
+
+                    v1 = selectedVertexQueue.pop();
+                    v1.toggleSelect(false);
+
+                    v2 = selectedVertexQueue.pop();
+                    v2.toggleSelect(false);
+
+                    v3 = selectedVertexQueue.pop();
+                    v3.toggleSelect(false);
+
+                    v4 = selectedVertexQueue.pop();
+                    v4.toggleSelect(false);
+
+                    e = new MeshEditorEvent(MeshEditorEvent.ELEMENT_ADDED);
+
+                    if(v1 == v4)
+                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, material:0};
+                    else
+                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, v4:v1.dataProvider, material:0};
+                    
+                    this.dispatchEvent(e);
+                }
             }
             else
             {
-                this.canvas.removeEventListener(MouseEvent.MOUSE_DOWN, this.canvasMouseDown);
-                this.canvas.removeEventListener(MouseEvent.MOUSE_UP, this.canvasMouseUp);
-                this.canvas.addEventListener(MouseEvent.CLICK, this.canvasMouseClick);
+                var cx:Number = this.canvas.mouseX/this.scaleFactor;
+                var cy:Number = -this.canvas.mouseY/this.scaleFactor;
+
+                var dictDistance:Dictionary = new Dictionary();
+                var nearest:Object = null;
+
+                for(var key:Object in this.dictVertexMarker)
+                {
+                    var vm:VertexMarker = this.dictVertexMarker[key];
+                    var distance:Number = Geometry.getDistance({x:cx,y:cy}, vm.dataProvider);
+
+                    dictDistance[vm] = distance;
+                    nearest = vm;
+                    trace(typeof(vm), typeof(distance))
+                }
+
+                trace("CLICKED @: ",cx,cy);
+                for(var k:Object in dictDistance)
+                {
+                    if(dictDistance[k] <= dictDistance[nearest])
+                        nearest = k;
+                }
+                trace("Nearest vertex ID:", nearest.dataProvider.id)
+
+
+
+
+
+                var v1:Object, v2:Object, v3:Object, v4:Object;
+                var e:MeshEditorEvent;
+
+                this.addToSelectedVertexQueue(nearest as VertexMarker);
+                nearest.toggleSelect(true);
+
+                if(this.selectedVertexQueue.length == 1)
+                {
+                    if(this.readyToAdd == this.ADD_ELEMENT)
+                    {
+                        this.elementContainer.addChild(this.selectionLine);
+                    }
+                    else if(this.readyToAdd == this.ADD_BOUNDARY)
+                    {
+                        this.boundaryContainer.addChild(this.selectionLine);
+                    }
+
+                    this.timerUpdateSelectionLine.start();
+                }
+
+                if(this.readyToAdd == this.ADD_BOUNDARY && this.selectedVertexQueue.length >= 2)
+                {
+                    this.timerUpdateSelectionLine.stop();
+                    this.selectionLine.graphics.clear();
+                    this.boundaryContainer.removeChild(this.selectionLine);
+
+                    v1 = selectedVertexQueue.pop();
+                    v1.toggleSelect(false);
+
+                    v2 = selectedVertexQueue.pop();
+                    v2.toggleSelect(false);
+
+                    e = new MeshEditorEvent(MeshEditorEvent.BOUNDARY_ADDED);
+                    e.data = {v1:v2.dataProvider, v2:v1.dataProvider, marker:1, angle:0, boundary:true};
+                    this.dispatchEvent(e);
+                }
+                else if(this.readyToAdd == this.ADD_ELEMENT && this.selectedVertexQueue.length == 4)
+                {
+                    this.timerUpdateSelectionLine.stop();
+                    this.selectionLine.graphics.clear();
+                    this.elementContainer.removeChild(this.selectionLine);
+
+                    v1 = selectedVertexQueue.pop();
+                    v1.toggleSelect(false);
+
+                    v2 = selectedVertexQueue.pop();
+                    v2.toggleSelect(false);
+
+                    v3 = selectedVertexQueue.pop();
+                    v3.toggleSelect(false);
+
+                    v4 = selectedVertexQueue.pop();
+                    v4.toggleSelect(false);
+
+                    e = new MeshEditorEvent(MeshEditorEvent.ELEMENT_ADDED);
+
+                    if(v1 == v4)
+                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, material:0};
+                    else
+                        e.data = {v1:v4.dataProvider, v2:v3.dataProvider, v3:v2.dataProvider, v4:v1.dataProvider, material:0};
+
+                    this.dispatchEvent(e);
+                }
+
+            }
+        }
+
+        public function mouseDoubleClick(evt:MouseEvent):void
+        {
+            var e:MeshEditorEvent;
+
+            if(evt.target is VertexMarker)
+            {
+                e = new MeshEditorEvent(MeshEditorEvent.VERTEX_REMOVED);
+                e.data = (evt.target as VertexMarker).dataProvider;
+                this.dispatchEvent(e);
+            }
+            else if(evt.target is ElementMarker)
+            {
+                e = new MeshEditorEvent(MeshEditorEvent.ELEMENT_REMOVED);
+                e.data = (evt.target as ElementMarker).dataProvider;
+                this.dispatchEvent(e);
+            }
+            else if(evt.target is BoundaryMarker)
+            {
+                e = new MeshEditorEvent(MeshEditorEvent.BOUNDARY_REMOVED);
+                e.data = (evt.target as BoundaryMarker).dataProvider;
+                this.dispatchEvent(e);
             }
         }
 

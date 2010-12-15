@@ -54,6 +54,7 @@
                     -->
                     <mx:CheckBox id="chkBoxShowBoundary" label="Show Boundaries" selected="true"/>
                     <mx:CheckBox id="chkBoxShowElement" label="Show Elements" selected="true"/>
+                    <mx:CheckBox id="chkBoxSelectNearestVertex" label="Select nearest vertex" selected="true"/>
                 </mx:HBox>
                 <mx:HBox horizontalAlign="right" paddingRight="15">
                     <mx:Button id="btnZoomIn" label="Zoom In" toolTip="Zoom IN, Shortcut: ="/>

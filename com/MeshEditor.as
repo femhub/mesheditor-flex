@@ -38,6 +38,7 @@ package com
         public var  btnDeleteMesh:Button;
         public var chkBoxShowElement:CheckBox;
         public var chkBoxShowBoundary:CheckBox;
+        public var chkBoxSelectNearestVertex:CheckBox;
         public var lblCordinate:Label;
         public var hboxDrawingArea:HBox;
         public var hScrollBar:HScrollBar;
@@ -84,6 +85,7 @@ package com
         {
             this.chkBoxShowElement.addEventListener(Event.CHANGE, this.chkBoxShowElementChange);
             this.chkBoxShowBoundary.addEventListener(Event.CHANGE, this.chkBoxShowBoundaryChange);
+            this.chkBoxSelectNearestVertex.addEventListener(Event.CHANGE, this.chkBoxSelectNearestVertexChange);
             this.btnShowWindow.addEventListener(MouseEvent.CLICK, this.btnShowWindowClick);
             this.btnSubmitMesh.addEventListener(MouseEvent.CLICK, this.btnSubmitMeshClick);
             this.btnRemoveItem.addEventListener(MouseEvent.CLICK, this.btnRemoveItemClick);
@@ -857,6 +859,11 @@ package com
         private function chkBoxShowBoundaryChange(evt:Event):void
         {
             this.drawingArea.showHideBoundary();
+        }
+
+        private function chkBoxSelectNearestVertexChange(evt:Event):void
+        {
+            this.drawingArea.selectNearestVertex = (!this.drawingArea.selectNearestVertex);
         }
 
         private function drawingAreaVertexUpdated(evt:MeshEditorEvent):void

@@ -1,4 +1,4 @@
-.. FEMhub document:ation master file, created by
+.. Mesh Editor documentation master file, created by
    sphinx-quickstart on Fri Apr 23 19:23:04 2009.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -10,10 +10,12 @@ FEMhub Documentation
     :maxdepth: 2
 
     src/introduction
+    src/install_run
+    src/howtouse
+
 
 .. #####
 
-    src/wrappers
 
     Indices and Tables
     ==================

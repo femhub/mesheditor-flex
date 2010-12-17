@@ -1,106 +1,64 @@
-Download, Install and Run FEMhub
-================================
-You can run download and install FEMhub easily on your local desktop. 
-Please follow the instructions below. If you do not want to download or 
-install anything you can use our `FEMhub Online Lab <http://nb.femhub.org/>`_.
+====================
+Building Mesh Editor
+====================
+Follow the instructions below to build the Mesh Editor and to run it.
 
-Binary
-------
-
-You can view a list of the binaries of all versions`here <htt://femhub.org/pub/`_. From there you can download the
-version you want.
-
-If you downloaded a binary, you do not need to do anything, just extract it and you are reday to go. Follow
-the instructions on running FEMhub below. 
-
-Building from Sources
----------------------
-
-You can get the tarball of sources here `here <htt://femhub.org/pub/>`_. 
-The most recent stable version is femhub-0.9.8. You can also try 0.9.9.beta6.
-
-If you download the sources, please read below on how to build FEMhub and work around common issues:
-
-1. Make sure you have the dependencies and 2GB free disk space.
+Step 1: Install the Flex SDK:
+-----------------------------
+To build the Mesh Editor first you will need to install the Flex SDK
 ::
- LINUX (install these using your package manager):
-      gcc, g++, make, m4, perl, ranlib, and tar.
+    \$ mkdir flex_sdk
+    \$ cd flex_sdk
+    \$ wget http://hpfem.org/downloads/flex_sdk_3.5.zip
+    \$ unzip flex_sdk_3.5.zip
 
- OSX: XCode.  WARNING: If "gcc -v" outputs 4.0.0, you 
-      *must* upgrade XCode (free from Apple), since that
-      version of GCC is very broken. 
-
- Microsoft Windows: install cygwin using the setup.exe and in that choose to install the following packages:
-
-     gcc4, gfortran, make, m4, perl, openssl-devel, cmake, libX11-devel,
-     xextproto, libXext-devel, libXt-devel, libXt, libXext
-
-NOTE: On some operating systems it might be necessary to install
-gas/as, gld/ld, gnm/nm, but on most these are automatically
-installed when you install the programs listed above.  Only OS X
->= 10.4.x and certain Linux distributions are 100% supported.
-See below for a complete list.
-
-2. Extract the tarball:
+To add flex_sdk.3.5/bin directory to your system path:
+change the following script according to your need and to your bashrc
 ::
-      \$ tar xf femhub-0.9.8-*.tar
+    \$ export PATH=\$PATH:path_to/flex_sdk.3.5/bin
 
-3. cd into the  femhub directory and type make:
+This PATH export is a temporary solution (valid only in your
+current terminal session). To make it permanent, you need to
+add the following line into your .bashrc file
 ::
-      \$ cd femhub-0.9.8
-      \$ make
+    \$ export PATH=\$PATH:/home/pavel/tmp/flex_sdk/bin
 
-You can take advantage of several cores on your computer by executing
+Adapt the path to the one you chose for your installation.
+
+Step 2: Clone the Mesh Editor Git Repository
+--------------------------------------------
+Now clone the mesh editor git repository (if you have not already done so)
 ::
-      \$ export MAKE="make -j9"
-before typing make to compile in parallel on 9 cores.
- 
-Depending on the speed of your computer, wait between 37 minutes to 1.5 hour. That's it. Everything is automatic and non-interactive.
+    \$ git clone git://github.com/hpfem/mesheditor-flex.git
 
-If you encounter problems, let us know through the FEMhub mailing list: http://groups.google.com/group/femhub
-
-If you want, you can also download a binary from `here <htt://femhub.org/pub/>`_, however, if it doesn't work for you, compile from source, that should always work.
-
-NOTE:  On Linux if you get this error message:
-:: 
-  " restore segment prot after reloc: Permission denied "
-the problem is probably related to SE Linux: http://www.ittvis.com/services/techtip.asp?ttid=3092
-
-Git Repository
---------------
-
-If you use git, you can download FEMhub and compile by following these instructions:
+Step 3: Compile the mesh editor
+--------------------------------
+To compile the mesh editor type
 ::
-    \$ git clone http://hpfem.org/git/femhub.git
-    \$ cd femhub
-    \$ cd spkg/standard
-    \$ ./download_packages     # downloads the required packages
-    \$ cd ../..
-    \$ export MAKE="make -j9"  # optional
+    \$ cd mesheditor-flex
     \$ make
 
-Running FEMhub
----------------
+This will compile and create a binary file MeshEditor.swf in the directory, which can be opened directly using a browser or can be installed in the FEMhub Online Lab as described in the step 3 below.
 
-Go the femhub top directory, and just execute
-:: 
-
- ./femhub 
-
-from the command line, and type lab() after that. 
+Step 3: Install mesh editor in FEMhub
+-------------------------------------
+If you want to install the mesh editor in FEMhub
 ::
-    \$ ./femhub
-    ----------------------------------------------------------------------
-    | Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
-    | Type lab() for the GUI.                                            |
-    ----------------------------------------------------------------------
-    In [1]: lab()
+     \$ make install
+This will compile & install mesh editor in your local femhub
 
-and a browser will start with the web notebook. If the browser does not 
-start automatically, just type this in your browser: http://localhost:8000/
+Test the Mesh Editor
+--------------------
+To test mesh editor:
 
-.. image:: img/femhub_lab.png
-   :align: center
-   :width: 600
-   :height: 400
-   :alt: Screenshot of FEMhub Online Lab
+After compilation ``MeshEditor.swf`` file will be generated.
+
+Then open it in a browser
+::
+   \$ firefox MeshEditor.swf
+
+This way you can test some of the mesh editing features but
+triangulation feature will not work.
+
+To use its full features, run local FEMhub, run the online lab and launch the
+mesh editor.

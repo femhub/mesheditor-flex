@@ -363,10 +363,6 @@ package com
             arcInfo.radius = r;
             arcInfo.centerAngle = boundary.angle;
 
-            //trace("-- Arc Info --");
-            //trace(C.x, C.y, angCA, angCB);
-            //trace(D.x, D.y, angDA, angDB);
-            //trace(r, arcInfo.centerAngle);
             return arcInfo;
         }
     }

@@ -142,24 +142,6 @@
             boundary.curve_path = arc_points;
 		}
 
-		/**
-		 * Draws an arc from the starting position of x,y.
-		 * 
-		 * @param target the Graphics Class that the Arc is drawn on.
-		 * @param x x coordinate of the starting pen position
-		 * @param y y coordinate of the starting pen position 
-		 * @param radius radius of Arc.
-		 * @param arc = sweep of the arc. Negative values draw clockwise.
-		 * @param startAngle = [optional] starting offset angle in degrees.
-		 * @param yRadius = [optional] y radius of arc. if different than 
-		 * radius, then the arc will draw as the arc of an oval.  
-		 * default = radius.
-		 *
-		 * Based on mc.drawArc by Ric Ewing.
-		 * the version by Ric assumes that the pen is at x:y before this
-		 * method is called.  I explictily move the pen to x:y to be 
-		 * consistent with the behaviour of the other methods.
-		 */
 		public static function drawArc2(target : Graphics,  x : Number, y : Number, radius : Number, arc : Number, startAngle : Number = 0, yRadius : Number = 0) : void {
 			
 			if (arguments.length < 5) {

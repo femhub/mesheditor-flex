@@ -151,7 +151,7 @@ package com
                 e1 = e2;
             }
 
-            //polyVertices.push(polyVertices[0]);
+            //polyVertices.push(polyVertices[0]).;
 
             return polyVertices;
         }
